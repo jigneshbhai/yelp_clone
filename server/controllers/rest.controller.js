@@ -80,14 +80,28 @@ export const deleteRest = async (req, res, next) => {
     const result = await db.query("DELETE FROM rest where id = $1", [
       req.params.id,
     ]);
-     res.status(204).json({
-       status: "success",
-     });
+    res.status(204).json({
+      status: "success",
+    });
   } catch (error) {
     next(error);
   }
 };
 
 export const addReview = async (req, res, next) => {
-  res.send("hello");
+  try {
+    const newReview = await db.query(
+      "INSERT INTO reviews (rest_id, name, review, rating) values ($1, $2, $3, $4) returning *;",
+      [req.params.id, req.body.name, req.body.review, req.body.rating]
+    );
+    console.log(newReview);
+    res.status(201).json({
+      status: "success",
+      data: {
+        review: newReview.rows[0],
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
